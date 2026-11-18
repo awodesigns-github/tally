@@ -1,0 +1,500 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------
+   Tokens: mirror the Figma variables (file I4TCEwTo0RfeDLJ3jh66fD)
+   --------------------------------------------------------------- */
+:root {
+  /* color */
+  --bg-canvas: #f6f5f2;
+  --bg-surface: #ffffff;
+  --bg-surface-pressed: #f0efeb;
+  --bg-inverse: #1c1b19;
+  --text-primary: #1c1b19;
+  --text-secondary: #78766f;
+  --text-inverse: #ffffff;
+  --border-subtle: #e7e5e0;
+  --accent-default: #2f9e5b;
+  --accent-soft: #e3f3e8;
+  --danger-default: #d9483b;
+  --danger-soft: #fbe4e1;
+  --archive-soft: #eceae4;
+
+  /* radius */
+  --radius-card: 18px;
+  --radius-input: 14px;
+  --radius-pill: 999px;
+
+  /* space */
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+
+  /* elevation */
+  --elevation-card: 0 4px 12px 0 rgb(28 26 23 / 0.05), 0 1px 2px 0 rgb(28 26 23 / 0.06);
+  --elevation-toast: 0 8px 24px 0 rgb(0 0 0 / 0.18);
+
+  /* motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --press-duration: 160ms;
+  --hold-duration: 2000ms;
+
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html {
+  background: var(--bg-canvas);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family:
+    'Inter',
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  font-feature-settings: 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+/* ---------------------------------------------------------------
+   Type styles (Figma text styles)
+   --------------------------------------------------------------- */
+.t-caption {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+.t-title {
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
+.t-body {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 400;
+}
+.t-habit-name {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: -0.16px;
+}
+.t-streak {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------
+   Screen
+   --------------------------------------------------------------- */
+.screen {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: max(32px, calc(env(safe-area-inset-top) + 20px)) max(16px, env(safe-area-inset-right))
+    calc(120px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.header-date {
+  color: var(--text-secondary);
+}
+.header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.header-summary {
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------
+   Add habit
+   --------------------------------------------------------------- */
+.add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 6px 6px 6px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-input);
+  transition: border-color 160ms ease;
+}
+.add:focus-within {
+  border-color: var(--text-secondary);
+}
+.add-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  /* 16px so iOS never zooms on focus */
+  font-size: 16px;
+  line-height: 22px;
+}
+.add-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+.add-button {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--radius-input);
+  background: var(--bg-inverse);
+  cursor: pointer;
+  transition:
+    transform var(--press-duration) var(--ease-out),
+    opacity 160ms ease;
+}
+.add-button:active {
+  transform: scale(0.97);
+}
+.add-button:focus-visible {
+  outline: 2px solid var(--accent-default);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------
+   Habit list + card
+   --------------------------------------------------------------- */
+.list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  position: relative;
+}
+
+/* The track clips the swipe; it carries the card's elevation. */
+.track {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  box-shadow: var(--elevation-card);
+  transition: box-shadow var(--press-duration) var(--ease-out);
+}
+.track[data-pressed='true'] {
+  box-shadow: none;
+}
+
+.archive-action {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  background: var(--archive-soft);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+.archive-action-inner {
+  width: 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.card-x {
+  position: relative;
+  touch-action: pan-y;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  height: 76px;
+  padding: var(--space-16);
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--bg-surface);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  outline: none;
+  transition:
+    transform var(--press-duration) var(--ease-out),
+    background-color var(--press-duration) ease,
+    box-shadow 200ms ease;
+}
+.card[data-pressed='true'] {
+  transform: scale(0.97);
+  background: var(--bg-surface-pressed);
+}
+.card[data-holding='true'] {
+  background: var(--bg-surface);
+}
+.card[data-milestone='true'] {
+  box-shadow: inset 0 0 0 1.5px var(--accent-default);
+}
+.card:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent-default);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover:not([data-pressed='true']) {
+    background: #fbfaf8;
+  }
+}
+
+/* Hold-to-delete sweep: slow and linear while held, snaps back fast on release. */
+.sweep {
+  position: absolute;
+  inset: 0;
+  background: var(--danger-soft);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 200ms var(--ease-out);
+  pointer-events: none;
+}
+.card[data-holding='true'] .sweep {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path var(--hold-duration) linear;
+}
+
+.check {
+  position: relative;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 2px var(--border-subtle);
+  transition: box-shadow 200ms var(--ease-out);
+}
+.check-fill {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  background: var(--accent-default);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+.card[data-logged='true'] .check-fill {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card-text {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.card-text > * {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.card-sub {
+  color: var(--text-secondary);
+  transition: color 200ms ease;
+}
+.card[data-logged='true'] .card-sub {
+  color: var(--accent-default);
+}
+.card[data-holding='true'] .card-sub {
+  color: var(--danger-default);
+}
+
+.streak {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.streak-num {
+  /* NumberFlow pads itself for its fade mask; centre it in the 24px line so the
+     digits sit exactly where the Figma text does. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 24px;
+}
+.streak-value {
+  color: var(--text-primary);
+  transition: color 200ms ease;
+}
+.card[data-logged='true'] .streak-value {
+  color: var(--accent-default);
+}
+.streak-unit {
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------
+   Milestone
+   --------------------------------------------------------------- */
+.milestone {
+  position: absolute;
+  top: -13px;
+  right: 14px;
+  z-index: 2;
+  pointer-events: none;
+}
+.milestone-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-default);
+  color: var(--text-inverse);
+  white-space: nowrap;
+}
+.confetti {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 999px;
+}
+
+/* ---------------------------------------------------------------
+   Empty state
+   --------------------------------------------------------------- */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 120px;
+  text-align: center;
+}
+.empty-illustration {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 36px;
+  background: var(--accent-soft);
+}
+.empty-body {
+  max-width: 280px;
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------
+   Undo toast
+   --------------------------------------------------------------- */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 8px 8px 18px;
+  border-radius: var(--radius-input);
+  background: var(--bg-inverse);
+  color: var(--text-inverse);
+  box-shadow: var(--elevation-toast);
+}
+.toast-message {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+.toast-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.toast-suffix {
+  flex-shrink: 0;
+  white-space: pre;
+}
+.toast-undo {
+  flex-shrink: 0;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: rgb(255 255 255 / 0.12);
+  color: var(--text-inverse);
+  cursor: pointer;
+  transition:
+    transform var(--press-duration) var(--ease-out),
+    background-color 160ms ease;
+}
+.toast-undo:active {
+  transform: scale(0.97);
+  background: rgb(255 255 255 / 0.2);
+}
+@media (hover: hover) and (pointer: fine) {
+  .toast-undo:hover {
+    background: rgb(255 255 255 / 0.18);
+  }
+}
+
+/* Sonner: let the custom toast fill the slot. */
+[data-sonner-toaster] [data-sonner-toast] {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------
+   Reduced motion: drop movement and scale, keep opacity and color.
+   The hold sweep stays because it carries meaning.
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .card[data-pressed='true'],
+  .add-button:active,
+  .toast-undo:active {
+    transform: none;
+  }
+  .check-fill {
+    transform: none;
+  }
+  [data-sonner-toaster] [data-sonner-toast] {
+    transition: opacity 400ms ease !important;
+  }
+}
